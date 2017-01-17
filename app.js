@@ -6,32 +6,34 @@
     .controller('AlreadyBoughtShoppingController', AlreadyBoughtShoppingController)
     .service('ShoppingListCheckOffService', ShoppingListCheckOffService);
 
+    AlreadyBoughtShoppingController.$inject = ['ShoppingListCheckOffService'];
+    function AlreadyBoughtShoppingController(ShoppingListCheckOffService) {
+      var boughtList = this;
+
+      boughtList.items = ShoppingListCheckOffService.boughtListItems();
+
+      boughtList.finishedShopping = function() {
+        return ShoppingListCheckOffService.finishedShopping();
+      };
+    }
+    
   ToBuyShoppingController.$inject = ['ShoppingListCheckOffService'];
   function ToBuyShoppingController(ShoppingListCheckOffService) {
     var shoppingList = this;
 
-    shoppingList.items = ShoppingListCheckOffService.buyListItems();
+    shoppingList.items = ShoppingListCheckOffService.toBuyListItems();
 
     shoppingList.buyItem = function(index) {
        ShoppingListCheckOffService.buyItem(index);
     };
   }
 
-  AlreadyBoughtShoppingController.$inject = ['ShoppingListCheckOffService'];
-  function AlreadyBoughtShoppingController(ShoppingListCheckOffService) {
-    var boughtList = this;
 
-    boughtList.items = ShoppingListCheckOffService.boughtListItems();
-
-    boughtList.finishedShopping = function() {
-      return ShoppingListCheckOffService.finishedShopping();
-    };
-  }
 
   function ShoppingListCheckOffService() {
     var service = this;
 
-    var buyList = [
+    var toBuyList = [
         { name: "Salami", quantity: 1 },
         { name: "French Bread", quantity: 3 },
         { name: "Milk", quantity: 2 },
@@ -44,8 +46,8 @@
 
     var boughtList = [];
 
-    service.buyListItems = function () {
-      return buyList;
+    service.toBuyListItems = function () {
+      return toBuyList;
     };
 
     service.boughtListItems = function () {
@@ -53,13 +55,13 @@
     };
 
     service.buyItem = function (index) {
-      var item = buyList[index];
-      buyList.splice(index,1);
+      var item = toBuyList[index];
+      toBuyList.splice(index,1);
       boughtList.push(item);
     };
 
     service.finishedShopping = function(){
-      return buyList.length == 0;
+      return toBuyList.length == 0;
     };
   }
 })();
