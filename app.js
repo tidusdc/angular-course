@@ -1,26 +1,65 @@
 (function() {
-    'use strict';
+  'use strict';
 
-    angular.module('LunchCheck', [])
-           .controller('LunchCheckController', LunchCheckController);
+  angular.module('ShoppingListCheckOff', [])
+    .controller('ToBuyShoppingController', ToBuyShoppingController)
+    .controller('AlreadyBoughtShoppingController', AlreadyBoughtShoppingController)
+    .service('ShoppingListCheckOffService', ShoppingListCheckOffService);
 
-    LunchCheckController.$inject = ['$scope'];
+  ToBuyShoppingController.$inject = ['ShoppingListCheckOffService'];
+  function ToBuyShoppingController(ShoppingListCheckOffService) {
+    var shoppingList = this;
 
-    function LunchCheckController ($scope) {
-        $scope.input = "";
-        $scope.message = "";
-        $scope.stack = function() {
+    shoppingList.items = ShoppingListCheckOffService.buyListItems();
 
-            var array = $scope.input.split(',');
+    shoppingList.buyItem = function(index) {
+       ShoppingListCheckOffService.buyItem(index);
+    };
+  }
 
-            if ($scope.input == "") {
-                $scope.message = "Please enter data first"
-            }
-            else if (array.length < 3 && $scope.message !== null ) {
-                $scope.message = "Enjoy";
-            } else {
-                $scope.message = "Too much!";
-            }
-        };
-    }
+  AlreadyBoughtShoppingController.$inject = ['ShoppingListCheckOffService'];
+  function AlreadyBoughtShoppingController(ShoppingListCheckOffService) {
+    var boughtList = this;
+
+    boughtList.items = ShoppingListCheckOffService.boughtListItems();
+
+    boughtList.finishedShopping = function() {
+      return ShoppingListCheckOffService.finishedShopping();
+    };
+  }
+
+  function ShoppingListCheckOffService() {
+    var service = this;
+
+    var buyList = [
+        { name: "Salami", quantity: 1 },
+        { name: "French Bread", quantity: 3 },
+        { name: "Milk", quantity: 2 },
+        { name: "Candy", quantity: 10 },
+        { name: "Butter", quantity: 2 },
+        { name: "Sprite", quantity: 5 },
+        { name: "Salt", quantity: 2 },
+        { name: "Pepper", quantity: 8 }
+      ];
+
+    var boughtList = [];
+
+    service.buyListItems = function () {
+      return buyList;
+    };
+
+    service.boughtListItems = function () {
+      return boughtList;
+    };
+
+    service.buyItem = function (index) {
+      var item = buyList[index];
+      buyList.splice(index,1);
+      boughtList.push(item);
+    };
+
+    service.finishedShopping = function(){
+      return buyList.length == 0;
+    };
+  }
 })();
